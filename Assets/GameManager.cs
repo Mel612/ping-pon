@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI p2Text;
     public TextMeshProUGUI timeText;
 
+    public GameObject startPanel;
     public GameObject gameOverPanel;
     public TextMeshProUGUI gameOverText;
 
@@ -18,6 +19,7 @@ public class GameManager : MonoBehaviour
     private int scoreP2 = 0;
     private float timeRemaining;
     private bool gameOver = false;
+    private bool gameStarted = false;
 
     private void Awake()
     {
@@ -27,15 +29,19 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        Time.timeScale = 1f;
         timeRemaining = matchDuration;
         gameOver = false;
+        gameStarted = false;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (startPanel != null) startPanel.SetActive(true);
         UpdateTimeText();
+        Time.timeScale = 0f;
     }
 
     private void Update()
     {
+        if (!gameStarted) return;
+
         if (gameOver)
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -53,6 +59,16 @@ public class GameManager : MonoBehaviour
         }
 
         UpdateTimeText();
+    }
+
+    public void StartGame()
+    {
+        gameStarted = true;
+        if (startPanel != null) startPanel.SetActive(false);
+        Time.timeScale = 1f;
+
+        BallController ball = FindFirstObjectByType<BallController>();
+        if (ball != null) ball.LaunchBall();
     }
 
     private void UpdateTimeText()
@@ -95,6 +111,7 @@ public class GameManager : MonoBehaviour
 
         timeRemaining = matchDuration;
         gameOver = false;
+        gameStarted = true;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         UpdateTimeText();
 
