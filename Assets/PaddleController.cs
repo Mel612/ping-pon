@@ -5,7 +5,9 @@ public class PaddleController : MonoBehaviour
     public float speed = 10f;
     public KeyCode moveUpKey = KeyCode.W;
     public KeyCode moveDownKey = KeyCode.S;
-    public float yLimit = 3.8f;
+    // Límites asimétricos: el borde superior deja espacio para la ScoreBar.
+    public float topLimit = 2.6f;
+    public float bottomLimit = 3.6f;
 
     void Update()
     {
@@ -21,7 +23,7 @@ public class PaddleController : MonoBehaviour
         }
 
         // Evita que la paleta se salga por arriba o por abajo
-        pos.y = Mathf.Clamp(pos.y, -yLimit, yLimit);
+        pos.y = Mathf.Clamp(pos.y, -bottomLimit, topLimit);
         transform.position = pos;
     }
 }
