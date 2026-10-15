@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public GameObject startPanel;
     public GameObject gameOverPanel;
     public GameObject pausePanel;
+    public GameObject confirmQuitPanel;
     public TextMeshProUGUI gameOverText;
 
     public float matchDuration = 60f;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     private bool gameOver = false;
     private bool gameStarted = false;
     private bool paused = false;
+    private bool confirmingQuit = false;
 
     private void Awake()
     {
@@ -35,8 +37,10 @@ public class GameManager : MonoBehaviour
         gameOver = false;
         gameStarted = false;
         paused = false;
+        confirmingQuit = false;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (confirmQuitPanel != null) confirmQuitPanel.SetActive(false);
         if (startPanel != null) startPanel.SetActive(true);
         UpdateTimeText();
         Time.timeScale = 0f;
@@ -51,6 +55,9 @@ public class GameManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R)) RestartGame();
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) { ToggleConfirmQuit(); return; }
+        if (confirmingQuit) return;
 
         if (Input.GetKeyDown(KeyCode.R)) { RestartGame(); return; }
         if (Input.GetKeyDown(KeyCode.P)) { TogglePause(); return; }
@@ -72,8 +79,10 @@ public class GameManager : MonoBehaviour
     {
         gameStarted = true;
         paused = false;
+        confirmingQuit = false;
         if (startPanel != null) startPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (confirmQuitPanel != null) confirmQuitPanel.SetActive(false);
         Time.timeScale = 1f;
 
         BallController ball = FindFirstObjectByType<BallController>();
@@ -85,6 +94,20 @@ public class GameManager : MonoBehaviour
         paused = !paused;
         Time.timeScale = paused ? 0f : 1f;
         if (pausePanel != null) pausePanel.SetActive(paused);
+    }
+
+    public void ToggleConfirmQuit()
+    {
+        confirmingQuit = !confirmingQuit;
+        if (confirmQuitPanel != null) confirmQuitPanel.SetActive(confirmingQuit);
+        Time.timeScale = (confirmingQuit || paused) ? 0f : 1f;
+    }
+
+    public void CancelQuit()
+    {
+        confirmingQuit = false;
+        if (confirmQuitPanel != null) confirmQuitPanel.SetActive(false);
+        Time.timeScale = paused ? 0f : 1f;
     }
 
     private void UpdateTimeText()
@@ -129,8 +152,10 @@ public class GameManager : MonoBehaviour
         gameOver = false;
         gameStarted = true;
         paused = false;
+        confirmingQuit = false;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
+        if (confirmQuitPanel != null) confirmQuitPanel.SetActive(false);
         UpdateTimeText();
 
         Time.timeScale = 1f;
