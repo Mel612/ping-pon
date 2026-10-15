@@ -36,7 +36,12 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (gameOver) return;
+        if (gameOver)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+                RestartGame();
+            return;
+        }
 
         timeRemaining -= Time.deltaTime;
         if (timeRemaining <= 0f)
@@ -73,12 +78,30 @@ public class GameManager : MonoBehaviour
             result = "EMPATE";
 
         if (gameOverText != null)
-            gameOverText.text = string.Format("GAME OVER\n\n<size=45%>{0}\n{1} - {2}</size>", result, scoreP1, scoreP2);
+            gameOverText.text = string.Format("GAME OVER\n\n<size=45%>{0}\n{1} - {2}</size>\n\n<size=30%>Presiona R para nueva ronda</size>", result, scoreP1, scoreP2);
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
 
         Time.timeScale = 0f;
+    }
+
+    public void RestartGame()
+    {
+        scoreP1 = 0;
+        scoreP2 = 0;
+        if (p1Text != null) p1Text.text = "0";
+        if (p2Text != null) p2Text.text = "0";
+
+        timeRemaining = matchDuration;
+        gameOver = false;
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        UpdateTimeText();
+
+        Time.timeScale = 1f;
+
+        BallController ball = FindFirstObjectByType<BallController>();
+        if (ball != null) ball.LaunchBall();
     }
 
     public void ScorePlayer1()
