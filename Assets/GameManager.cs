@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
             result = "EMPATE";
 
         if (gameOverText != null)
-            gameOverText.text = string.Format("GAME OVER\n\n<size=45%>{0}\n{1} - {2}</size>\n\n<size=30%>Presiona R para nueva ronda</size>", result, scoreP1, scoreP2);
+            gameOverText.text = string.Format("GAME OVER\n\n<size=45%>{0}\n{1} - {2}</size>", result, scoreP1, scoreP2);
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
