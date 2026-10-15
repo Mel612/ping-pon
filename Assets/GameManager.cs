@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject startPanel;
     public GameObject gameOverPanel;
+    public GameObject pausePanel;
     public TextMeshProUGUI gameOverText;
 
     public float matchDuration = 60f;
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     private float timeRemaining;
     private bool gameOver = false;
     private bool gameStarted = false;
+    private bool paused = false;
 
     private void Awake()
     {
@@ -32,7 +34,9 @@ public class GameManager : MonoBehaviour
         timeRemaining = matchDuration;
         gameOver = false;
         gameStarted = false;
+        paused = false;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
         if (startPanel != null) startPanel.SetActive(true);
         UpdateTimeText();
         Time.timeScale = 0f;
@@ -44,10 +48,13 @@ public class GameManager : MonoBehaviour
 
         if (gameOver)
         {
-            if (Input.GetKeyDown(KeyCode.R))
-                RestartGame();
+            if (Input.GetKeyDown(KeyCode.R)) RestartGame();
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.R)) { RestartGame(); return; }
+        if (Input.GetKeyDown(KeyCode.P)) { TogglePause(); return; }
+        if (paused) return;
 
         timeRemaining -= Time.deltaTime;
         if (timeRemaining <= 0f)
@@ -64,11 +71,20 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         gameStarted = true;
+        paused = false;
         if (startPanel != null) startPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
         Time.timeScale = 1f;
 
         BallController ball = FindFirstObjectByType<BallController>();
         if (ball != null) ball.LaunchBall();
+    }
+
+    public void TogglePause()
+    {
+        paused = !paused;
+        Time.timeScale = paused ? 0f : 1f;
+        if (pausePanel != null) pausePanel.SetActive(paused);
     }
 
     private void UpdateTimeText()
@@ -112,13 +128,23 @@ public class GameManager : MonoBehaviour
         timeRemaining = matchDuration;
         gameOver = false;
         gameStarted = true;
+        paused = false;
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
         UpdateTimeText();
 
         Time.timeScale = 1f;
 
         BallController ball = FindFirstObjectByType<BallController>();
         if (ball != null) ball.LaunchBall();
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 
     public void ScorePlayer1()
